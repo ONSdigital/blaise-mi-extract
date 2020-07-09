@@ -1,7 +1,6 @@
 package extract
 
 import (
-	"archive/zip"
 	"context"
 	"encoding/csv"
 	"github.com/rs/zerolog"
