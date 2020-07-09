@@ -13,7 +13,8 @@ type PubSubMessage struct {
 }
 
 func main() {
-	funcframework.RegisterEventFunction("/", extract.ExtractMI)
+	funcframework.RegisterEventFunction("/", extract.MIToCSV)
+	//funcframework.RegisterEventFunction("/", extract.ExtractMI)
 	// Use PORT environment variable, or default to 8080.
 	port := "8080"
 	if envPort := os.Getenv("PORT"); envPort != "" {

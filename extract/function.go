@@ -1,6 +1,7 @@
 package extract
 
 import (
+	"archive/zip"
 	"context"
 	"encoding/csv"
 	"github.com/rs/zerolog"
@@ -23,15 +24,9 @@ const (
 	Debug            = "DEBUG"
 )
 
-var bucketName string
+var persistFile FilePersistence
 
 func init() {
-	var found bool
-
-	if bucketName, found = os.LookupEnv(BucketKey); !found {
-		log.Fatal().Msg("The " + BucketKey + " varible has not been set")
-		os.Exit(1)
-	}
 
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
@@ -51,9 +46,11 @@ func init() {
 			zerolog.SetGlobalLevel(zerolog.DebugLevel)
 		}
 	}
+
+	persistFile = GetDefaultFilePersistenceImpl()
 }
 
-func ExtractMI(ctx context.Context, m PubSubMessage) error {
+func MIToCSV(ctx context.Context, m PubSubMessage) error {
 
 	log.Info().
 		Str("action", m.Action).
@@ -68,20 +65,22 @@ func ExtractMI(ctx context.Context, m PubSubMessage) error {
 	var source string
 	var err error
 
-	if source, err = createCVS(); err != nil {
+	if source, err = dataToCSV(true); err != nil {
 		return err
 	}
 
 	destination := m.Instrument + ".csv"
 
-	if err = GetDefaultFilePersistenceImpl().SaveToCSV(bucketName, source, destination); err != nil {
+	if err = persistFile.SaveToCSV(source, destination); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func createCVS() (string, error) {
+func dataToCSV(zip bool) (string, error) {
+
+	// get the data out of the database and save to a csv file. optionally a zip file
 
 	tmpFile, err := ioutil.TempFile("/tmp", "csv")
 	if err != nil {
@@ -105,5 +104,4 @@ func createCVS() (string, error) {
 	}
 
 	return tmpFile.Name(), nil
-
 }
