@@ -1,0 +1,29 @@
+{
+	"info": {
+		"_postman_id": "6dbceeba-50ad-413a-b4a4-9697c15fbee9",
+		"name": "Extract",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "extract",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"action\":\"extract_mi\",\"instrument_name\":\"OPN2002A\"}"
+				},
+				"url": {
+					"raw": "localhost:8080",
+					"host": [
+						"localhost"
+					],
+					"port": "8080"
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
