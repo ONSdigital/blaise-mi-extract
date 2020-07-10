@@ -1,11 +1,10 @@
 package main
 
 import (
+	"github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/ONSDigital/blaise-mi-extractcsv"
 	"log"
 	"os"
-
-	"github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/ONSDigital/blaise-mi-extractcsv/extract"
 )
 
 type PubSubMessage struct {
@@ -13,8 +12,9 @@ type PubSubMessage struct {
 }
 
 func main() {
-	funcframework.RegisterEventFunction("/", extract.MIToCSV)
-	//funcframework.RegisterEventFunction("/", extract.ExtractMI)
+	funcframework.RegisterEventFunction("/", blaise_mi_extractcsv.ExtractFunction)
+	funcframework.RegisterEventFunction("/zip", blaise_mi_extractcsv.ZipFunction)
+
 	// Use PORT environment variable, or default to 8080.
 	port := "8080"
 	if envPort := os.Getenv("PORT"); envPort != "" {

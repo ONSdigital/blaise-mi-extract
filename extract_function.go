@@ -1,13 +1,13 @@
-package extract
+package blaise_mi_extractcsv
 
 import (
 	"context"
 	"encoding/csv"
-	"github.com/rs/zerolog"
+	"github.com/ONSDigital/blaise-mi-extractcsv/persistence"
+	"github.com/ONSDigital/blaise-mi-extractcsv/util"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"os"
-	"time"
 )
 
 type PubSubMessage struct {
@@ -15,41 +15,23 @@ type PubSubMessage struct {
 	Instrument string `json:"instrument_name"`
 }
 
-const (
-	BucketKey string = "MI_BUCKET_NAME"
-	LogFormat string = "LOG_FORMAT"
-	Terminal         = "Terminal"
-	Json             = "Json"
-	Debug            = "DEBUG"
-)
+const zipLocation = "ZIP_LOCATION"
 
-var persistFile FilePersistence
+var extractStorage persistence.FilePersistence
+var zipDestination string
 
 func init() {
+	util.Initialise()
+	extractStorage = persistence.GetStorageProvider()
+	var found bool
 
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-
-	// change log format
-	if terminal, isFound := os.LookupEnv(LogFormat); isFound {
-		switch terminal {
-		case Terminal:
-			log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, NoColor: false, TimeFormat: time.Stamp})
-		case Json:
-			// json is the default
-		}
+	if zipDestination, found = os.LookupEnv(zipLocation); !found {
+		log.Fatal().Msg("The " + zipLocation + " varible has not been set for the google zipStorage provider")
+		os.Exit(1)
 	}
-
-	if debug, f := os.LookupEnv(Debug); f {
-		switch debug {
-		case "True":
-			zerolog.SetGlobalLevel(zerolog.DebugLevel)
-		}
-	}
-
-	persistFile = GetDefaultFilePersistenceImpl()
 }
 
-func MIToCSV(ctx context.Context, m PubSubMessage) error {
+func ExtractFunction(ctx context.Context, m PubSubMessage) error {
 
 	log.Info().
 		Str("action", m.Action).
@@ -64,20 +46,20 @@ func MIToCSV(ctx context.Context, m PubSubMessage) error {
 	var source string
 	var err error
 
-	if source, err = dataToCSV(true); err != nil {
+	if source, err = dataToCSV(); err != nil {
 		return err
 	}
 
 	destination := m.Instrument + ".csv"
 
-	if err = persistFile.SaveToCSV(source, destination); err != nil {
+	if err = extractStorage.Save(zipDestination, source, destination); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func dataToCSV(zip bool) (string, error) {
+func dataToCSV() (string, error) {
 
 	// get the data out of the database and save to a csv file. optionally a zip file
 
