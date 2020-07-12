@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/ONSDigital/blaise-mi-extractcsv"
+	blaise_mi_extractcsv "github.com/ONSDigital/blaise-mi-extractcsv"
 	"log"
 	"os"
 )
@@ -22,6 +22,8 @@ func main() {
 	}
 
 	if err := funcframework.Start(port); err != nil {
+		println("ooh error")
 		log.Fatalf("funcframework.Start: %v\n", err)
 	}
+
 }

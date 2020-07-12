@@ -3,7 +3,6 @@ package blaise_mi_extractcsv
 import (
 	"context"
 	"encoding/csv"
-	"github.com/ONSDigital/blaise-mi-extractcsv/persistence"
 	"github.com/ONSDigital/blaise-mi-extractcsv/util"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
@@ -17,18 +16,23 @@ type PubSubMessage struct {
 
 const zipLocation = "ZIP_LOCATION"
 
-var extractStorage persistence.FilePersistence
+type Extract struct {
+	persistence Persistence
+}
+
+var extract Extract
 var zipDestination string
 
 func init() {
 	util.Initialise()
-	extractStorage = persistence.GetStorageProvider()
+	extract = Extract{persistence: GetPersistence()}
 	var found bool
 
 	if zipDestination, found = os.LookupEnv(zipLocation); !found {
 		log.Fatal().Msg("The " + zipLocation + " varible has not been set for the google zipStorage provider")
 		os.Exit(1)
 	}
+
 }
 
 func ExtractFunction(ctx context.Context, m PubSubMessage) error {
@@ -52,7 +56,7 @@ func ExtractFunction(ctx context.Context, m PubSubMessage) error {
 
 	destination := m.Instrument + ".csv"
 
-	if err = extractStorage.Save(zipDestination, source, destination); err != nil {
+	if err = extract.persistence.Save(zipDestination, source, destination); err != nil {
 		return err
 	}
 

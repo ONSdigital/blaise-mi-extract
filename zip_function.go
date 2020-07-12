@@ -1,10 +1,7 @@
 package blaise_mi_extractcsv
 
 import (
-	"cloud.google.com/go/functions/metadata"
 	"context"
-	"fmt"
-	"github.com/ONSDigital/blaise-mi-extractcsv/persistence"
 	"github.com/ONSDigital/blaise-mi-extractcsv/util"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -47,47 +44,37 @@ type GCSEvent struct {
 
 const encryptLocation = "ENCRYPT_LOCATION"
 
-var zipStorage persistence.FilePersistence
+type Zip struct {
+	persistence Persistence
+}
+
+var zip Zip
 var encryptionDestination string
 
 func init() {
 	util.Initialise()
-	zipStorage = persistence.GetStorageProvider()
+	zip = Zip{persistence: GetPersistence()}
 	var found bool
 
 	if encryptionDestination, found = os.LookupEnv(encryptLocation); !found {
 		log.Fatal().Msg("The " + encryptLocation + " varible has not been set for the google zipStorage provider")
 		os.Exit(1)
 	}
-
 }
 
 func ZipFunction(ctx context.Context, e GCSEvent) error {
-
-	meta, err := metadata.FromContext(ctx)
-	if err != nil {
-		return fmt.Errorf("metadata.FromContext: %v", err)
-	}
-
-	log.Printf("Event ID: %v\n", meta.EventID)
-	log.Printf("Event type: %v\n", meta.EventType)
-	log.Printf("Bucket: %v\n", e.Bucket)
-	log.Printf("File: %v\n", e.Name)
-	log.Printf("Metageneration: %v\n", e.Metageneration)
-	log.Printf("Created: %v\n", e.TimeCreated)
-	log.Printf("Updated: %v\n", e.Updated)
 
 	log.Info().
 		Str("bucket", e.Bucket).
 		Str("file", e.Name).
 		Msgf("received zip request")
 
-	if err := zipStorage.Zip(e.Name, e.Bucket, encryptionDestination); err != nil {
+	if err := zip.persistence.Zip(e.Name, e.Bucket, encryptionDestination); err != nil {
 		log.Err(err).Msg("create zip failed")
 		return err
 	}
 
-	if err := zipStorage.Delete(e.Name, e.Bucket); err != nil {
+	if err := zip.persistence.Delete(e.Name, e.Bucket); err != nil {
 		return err
 	}
 

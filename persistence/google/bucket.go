@@ -1,4 +1,4 @@
-package gcloud
+package google
 
 import (
 	"archive/zip"
@@ -10,12 +10,12 @@ import (
 	"time"
 )
 
-type GoogleBucket struct {
+type Persistence struct {
 	client *storage.Client
 	reader *storage.Reader
 }
 
-func New() (GoogleBucket, string) {
+func New() Persistence {
 
 	client, err := storage.NewClient(context.Background())
 	if err != nil {
@@ -23,12 +23,10 @@ func New() (GoogleBucket, string) {
 		os.Exit(1)
 	}
 
-	gs := GoogleBucket{client: client}
-	return gs, "Google"
-
+	return Persistence{client: client}
 }
 
-func (gs GoogleBucket) Save(location, sourceFile, destinationFile string) error {
+func (gs Persistence) Save(location, sourceFile, destinationFile string) error {
 
 	log.Debug().Msgf("saving to GCloud Bucket; location: %s, sourceFile: %s, destinationFile: %s", location, sourceFile, destinationFile)
 
@@ -67,7 +65,7 @@ func (gs GoogleBucket) Save(location, sourceFile, destinationFile string) error 
 	return nil
 }
 
-func (gs GoogleBucket) Zip(fileName, fromDirectory, toDirectory string) error {
+func (gs Persistence) Zip(fileName, fromDirectory, toDirectory string) error {
 
 	readBucket := gs.client.Bucket(fromDirectory)
 	readObj := readBucket.Object(fileName)
@@ -114,7 +112,7 @@ func (gs GoogleBucket) Zip(fileName, fromDirectory, toDirectory string) error {
 	return nil
 }
 
-func (gs GoogleBucket) Delete(file, directory string) error {
+func (gs Persistence) Delete(file, directory string) error {
 
 	ctx := context.Background()
 

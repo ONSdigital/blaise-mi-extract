@@ -34,4 +34,5 @@ func Initialise() {
 			zerolog.SetGlobalLevel(zerolog.DebugLevel)
 		}
 	}
+
 }
