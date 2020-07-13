@@ -1,12 +1,12 @@
 {
 	"info": {
-		"_postman_id": "6dbceeba-50ad-413a-b4a4-9697c15fbee9",
+		"_postman_id": "1ed78c89-3aa1-4aa9-9089-e7d5a3f57b22",
 		"name": "Extract",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "extract",
+			"name": "Extract",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -20,6 +20,50 @@
 						"localhost"
 					],
 					"port": "8080"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Zip",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"OPN2002A.csv\",\n    \"bucket\" : \"ons-blaise-dev-pds-20-mi-zip\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/zip",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"zip"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Encrypt",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"OPN2002A.csv.zip\",\n    \"bucket\" : \"ons-blaise-dev-pds-18-mi-encrypt\"\n\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/encrypt",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"encrypt"
+					]
 				}
 			},
 			"response": []
