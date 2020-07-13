@@ -7,13 +7,10 @@ import (
 	"os"
 )
 
-type PubSubMessage struct {
-	Data []byte `json:"data"`
-}
-
 func main() {
 	funcframework.RegisterEventFunction("/", blaise_mi_extractcsv.ExtractFunction)
 	funcframework.RegisterEventFunction("/zip", blaise_mi_extractcsv.ZipFunction)
+	funcframework.RegisterEventFunction("/encrypt", blaise_mi_extractcsv.EncryptFunction)
 
 	// Use PORT environment variable, or default to 8080.
 	port := "8080"
@@ -22,7 +19,6 @@ func main() {
 	}
 
 	if err := funcframework.Start(port); err != nil {
-		println("ooh error")
 		log.Fatalf("funcframework.Start: %v\n", err)
 	}
 

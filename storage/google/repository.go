@@ -5,28 +5,27 @@ import (
 	"cloud.google.com/go/storage"
 	"context"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/crypto/openpgp"
 	"io"
 	"os"
 	"time"
 )
 
-type Persistence struct {
+type Storage struct {
 	client *storage.Client
-	reader *storage.Reader
 }
 
-func New() Persistence {
-
+func NewStorage() Storage {
 	client, err := storage.NewClient(context.Background())
 	if err != nil {
-		log.Err(err).Str("internal Error", "Cannot get GCloud Storage Bucket")
+		log.Err(err).Msg("Cannot get GCloud Storage Bucket")
 		os.Exit(1)
 	}
 
-	return Persistence{client: client}
+	return Storage{client: client}
 }
 
-func (gs Persistence) Save(location, sourceFile, destinationFile string) error {
+func (gs Storage) Save(location, sourceFile, destinationFile string) error {
 
 	log.Debug().Msgf("saving to GCloud Bucket; location: %s, sourceFile: %s, destinationFile: %s", location, sourceFile, destinationFile)
 
@@ -65,7 +64,7 @@ func (gs Persistence) Save(location, sourceFile, destinationFile string) error {
 	return nil
 }
 
-func (gs Persistence) Zip(fileName, fromDirectory, toDirectory string) error {
+func (gs Storage) Zip(fileName, fromDirectory, toDirectory string) error {
 
 	readBucket := gs.client.Bucket(fromDirectory)
 	readObj := readBucket.Object(fileName)
@@ -112,7 +111,7 @@ func (gs Persistence) Zip(fileName, fromDirectory, toDirectory string) error {
 	return nil
 }
 
-func (gs Persistence) Delete(file, directory string) error {
+func (gs Storage) Delete(file, directory string) error {
 
 	ctx := context.Background()
 
@@ -127,4 +126,38 @@ func (gs Persistence) Delete(file, directory string) error {
 
 	log.Debug().Msgf("deleted file %s fromm directory: %s", file, directory)
 	return nil
+}
+
+func (gs Storage) Encrypt(publicKey, fileName, fromDirectory, toDirectory string) error {
+	readBucket := gs.client.Bucket(fromDirectory)
+	readObj := readBucket.Object(fileName)
+
+	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second*15)
+	defer cancel()
+
+	storageReader, err := readObj.NewReader(ctx)
+	if err != nil {
+		log.Err(err).Msgf("GCloud error: cannot create a reader")
+		return err
+	}
+
+	defer func() { _ = storageReader.Close() }()
+
+	writeBucket := gs.client.Bucket(toDirectory)
+	writeObj := writeBucket.Object(fileName + ".gpg")
+
+	storageWriter := writeObj.NewWriter(ctx)
+
+	defer func() { _ = storageWriter.Close() }()
+
+	// Read public key
+	recipient, err := readEntity(publicKey)
+	if err != nil {
+		log.Err(err).Msgf("cannot read public key")
+		return err
+	}
+
+	return encrypt([]*openpgp.Entity{recipient}, nil, storageReader, storageWriter)
 }
