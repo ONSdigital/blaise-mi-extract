@@ -26,7 +26,7 @@ func init() {
 	}
 }
 
-func ZipFunction(ctx context.Context, e GCSEvent) error {
+func ZipFunction(_ context.Context, e GCSEvent) error {
 
 	log.Info().
 		Str("bucket", e.Bucket).

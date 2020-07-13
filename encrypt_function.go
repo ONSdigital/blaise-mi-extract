@@ -37,7 +37,7 @@ func init() {
 	log.Info().Msgf("public key file: %s", keyFile)
 }
 
-func EncryptFunction(ctx context.Context, e GCSEvent) error {
+func EncryptFunction(_ context.Context, e GCSEvent) error {
 
 	log.Info().
 		Str("bucket", e.Bucket).

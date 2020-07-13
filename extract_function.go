@@ -31,7 +31,7 @@ func init() {
 	}
 }
 
-func ExtractFunction(ctx context.Context, m PubSubMessage) error {
+func ExtractFunction(_ context.Context, m PubSubMessage) error {
 
 	if m.Action != "extract_mi" {
 		log.Warn().Msgf("message rejected, unknown action -> [%s]", m.Action)
