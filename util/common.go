@@ -1,14 +1,18 @@
-package blaise_mi_extractcsv
+package util
 
 import (
 	"time"
 )
 
 const (
-	encryptedLocation = "ZIP_LOCATION"
-	encryptLocation   = "ENCRYPT_LOCATION"
-	zipLocation       = "ENCRYPTED_LOCATION"
-	publicKeyFile     = "PUBLIC_KEY"
+	EncryptedLocation = "ZIP_LOCATION"
+	EncryptLocation   = "ENCRYPT_LOCATION"
+	ZipLocation       = "ENCRYPTED_LOCATION"
+	PublicKeyFile     = "PUBLIC_KEY"
+	Server            = "DB_SERVER"
+	User              = "DB_USER"
+	Password          = "DB_PASSWORD"
+	Database          = "DB_DATABASE"
 )
 
 type GCSEvent struct {

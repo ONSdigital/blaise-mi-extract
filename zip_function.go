@@ -20,13 +20,13 @@ func init() {
 
 	var found bool
 
-	if encryptedDestination, found = os.LookupEnv(encryptedLocation); !found {
-		log.Fatal().Msg("The " + encryptedLocation + " varible has not been set")
+	if encryptedDestination, found = os.LookupEnv(util.EncryptedLocation); !found {
+		log.Fatal().Msg("The " + util.EncryptedLocation + " varible has not been set")
 		os.Exit(1)
 	}
 }
 
-func ZipFunction(_ context.Context, e GCSEvent) error {
+func ZipFunction(_ context.Context, e util.GCSEvent) error {
 
 	log.Info().
 		Str("bucket", e.Bucket).

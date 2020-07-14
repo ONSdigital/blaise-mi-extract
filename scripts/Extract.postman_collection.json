@@ -25,28 +25,6 @@
 			"response": []
 		},
 		{
-			"name": "Zip",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\" : \"OPN2002A.csv\",\n    \"bucket\" : \"ons-blaise-dev-pds-20-mi-zip\"\n}"
-				},
-				"url": {
-					"raw": "localhost:8080/zip",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"zip"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Encrypt",
 			"request": {
 				"method": "POST",
@@ -63,6 +41,28 @@
 					"port": "8080",
 					"path": [
 						"encrypt"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Zip",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"OPN2002A.csv\",\n    \"bucket\" : \"ons-blaise-dev-pds-20-mi-zip\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/zip",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"zip"
 					]
 				}
 			},

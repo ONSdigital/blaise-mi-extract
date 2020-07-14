@@ -3,14 +3,11 @@
 
 This package contains three seperate functions that operate as follows:
 
-```
-ExtractFunction => ENCRYPT_LOCATION => EncryptFunction => ZIP_LOCATION => ZIPFunction => ENCRYPTED_LOCATION
-```
+ExtractFunction => **ENCRYPT_LOCATION** => EncryptFunction => **ZIP_LOCATION** => ZIPFunction => **ENCRYPTED_LOCATION**
 
 GCP storage triggers have been used to send notifications that a file has arrived in a bucket.
 
-The application architecture has been modelled on the ```Hexagonal Architecture``` pattern. 
-See [here](https://about.sourcegraph.com/go/gophercon-2018-how-do-you-structure-your-go-apps) and [here](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)) for details.
+The application architecture has been modelled on the [```Hexagonal Architecture```](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)) pattern. 
 
 # Configuration
 
@@ -20,7 +17,7 @@ Set the default functions region:
 
 `gcloud config set functions/region europe-west2`
 
-otherwise functions will be created somewhere far away in the ether...
+Otherwise functions will be created somewhere far away in the ether...
 
 ### Environment Variables
 

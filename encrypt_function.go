@@ -22,22 +22,22 @@ func init() {
 
 	var found bool
 
-	if zipDestination, found = os.LookupEnv(zipLocation); !found {
-		log.Fatal().Msg("The " + zipLocation + " varible has not been set")
+	if zipDestination, found = os.LookupEnv(util.ZipLocation); !found {
+		log.Fatal().Msg("The " + util.ZipLocation + " varible has not been set")
 		os.Exit(1)
 	}
 
 	log.Info().Msgf("zip destination: %s", zipDestination)
 
-	if keyFile, found = os.LookupEnv(publicKeyFile); !found {
-		log.Fatal().Msg("The " + publicKeyFile + " varible has not been set")
+	if keyFile, found = os.LookupEnv(util.PublicKeyFile); !found {
+		log.Fatal().Msg("The " + util.PublicKeyFile + " varible has not been set")
 		os.Exit(1)
 	}
 
 	log.Info().Msgf("public key file: %s", keyFile)
 }
 
-func EncryptFunction(_ context.Context, e GCSEvent) error {
+func EncryptFunction(_ context.Context, e util.GCSEvent) error {
 
 	log.Info().
 		Str("bucket", e.Bucket).
