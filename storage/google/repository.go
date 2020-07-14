@@ -8,6 +8,8 @@ import (
 	"golang.org/x/crypto/openpgp"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -64,7 +66,7 @@ func (gs Storage) Save(location, sourceFile, destinationFile string) error {
 	return nil
 }
 
-func (gs Storage) Zip(fileName, fromDirectory, toDirectory string) error {
+func (gs Storage) Zip(fileName, fromDirectory, toDirectory string) (string, error) {
 
 	readBucket := gs.client.Bucket(fromDirectory)
 	readObj := readBucket.Object(fileName)
@@ -77,13 +79,19 @@ func (gs Storage) Zip(fileName, fromDirectory, toDirectory string) error {
 	storageReader, err := readObj.NewReader(ctx)
 	if err != nil {
 		log.Err(err).Msgf("GCloud error: cannot create a reader")
-		return err
+		return "", err
 	}
 
 	defer func() { _ = storageReader.Close() }()
 
 	writeBucket := gs.client.Bucket(toDirectory)
-	writeObj := writeBucket.Object(fileName + ".zip")
+
+	currentTime := time.Now()
+	t := strings.TrimSuffix(fileName, filepath.Ext(fileName)) // strip off .gpg suffix
+	u := strings.TrimSuffix(t, filepath.Ext(t))               // strip off .csv suffix
+	name := "mi_" + u + "_" + currentTime.Format("02012006") + "_" + currentTime.Format("150505") + ".zip"
+
+	writeObj := writeBucket.Object(name)
 
 	storageWriter := writeObj.NewWriter(ctx)
 	defer func() { _ = storageWriter.Close() }()
@@ -94,21 +102,20 @@ func (gs Storage) Zip(fileName, fromDirectory, toDirectory string) error {
 	// add filename to zip
 	zipFile, err := zipWriter.Create(fileName)
 	if err != nil {
-		log.Err(err).Msgf("error adding file to zip: %s in directory %s", fileName+".zip", toDirectory)
-		return err
+		log.Err(err).Msgf("error adding file to zip: %s in directory %s", name+".zip", toDirectory)
+		return "", err
 	}
 
-	// copy from storage reader to zip writer
 	_, err = io.Copy(zipFile, storageReader)
 
 	if err != nil {
 		log.Err(err).Msgf("error creating zip file: %s in directory %s", fileName+".zip", toDirectory)
-		return err
+		return "", err
 	}
 
-	log.Debug().Msgf("zip file: %s created in directory: %s", fileName+".zip", toDirectory)
+	log.Debug().Msgf("file: %s, saved to: %s/%s", u, toDirectory, u)
 
-	return nil
+	return name, nil
 }
 
 func (gs Storage) Delete(file, directory string) error {
@@ -124,7 +131,8 @@ func (gs Storage) Delete(file, directory string) error {
 		return err
 	}
 
-	log.Debug().Msgf("deleted file %s fromm directory: %s", file, directory)
+	log.Debug().Msgf("file: %s/%s deleted", directory, file)
+
 	return nil
 }
 
@@ -159,5 +167,13 @@ func (gs Storage) Encrypt(publicKey, fileName, fromDirectory, toDirectory string
 		return err
 	}
 
-	return encrypt([]*openpgp.Entity{recipient}, nil, storageReader, storageWriter)
+	if err := encrypt([]*openpgp.Entity{recipient}, nil, storageReader, storageWriter); err != nil {
+		log.Err(err).Msgf("encrypt failes")
+		return err
+	}
+
+	log.Info().Msgf("file %s encrypted and saved to %s/%s", fileName, toDirectory, fileName+".gpg")
+
+	return nil
+
 }

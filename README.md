@@ -4,7 +4,7 @@
 This package contains three seperate functions that operate as follows:
 
 ```
-MI_EXTRACT_BUCKET/incoming => ExtractFunction => MI_EXTRACT_BUCKET/zip => ZIPFunction => MI_EXTRACT_BUCKET/encrypt => EncryptFunction => MI_EXTRACT_BUCKET/encrypted
+ExtractFunction => ENCRYPT_LOCATION => EncryptFunction => ZIP_LOCATION => ZIPFunction => ENCRYPTED_LOCATION
 ```
 
 GCP storage triggers have been used to send notifications that a file has arrived in a bucket.

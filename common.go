@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	zipLocation       = "ZIP_LOCATION"
+	encryptedLocation = "ZIP_LOCATION"
 	encryptLocation   = "ENCRYPT_LOCATION"
-	encryptedLocation = "ENCRYPTED_LOCATION"
+	zipLocation       = "ENCRYPTED_LOCATION"
 	publicKeyFile     = "PUBLIC_KEY"
 )
 

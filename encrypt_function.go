@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-var encryptedDestination string
+var zipDestination string
 var keyFile string
 
 var encrypter encryption.Service
@@ -22,12 +22,12 @@ func init() {
 
 	var found bool
 
-	if encryptedDestination, found = os.LookupEnv(encryptedLocation); !found {
-		log.Fatal().Msg("The " + encryptedLocation + " varible has not been set")
+	if zipDestination, found = os.LookupEnv(zipLocation); !found {
+		log.Fatal().Msg("The " + zipLocation + " varible has not been set")
 		os.Exit(1)
 	}
 
-	log.Info().Msgf("encrypted destination: %s", encryptedDestination)
+	log.Info().Msgf("zip destination: %s", zipDestination)
 
 	if keyFile, found = os.LookupEnv(publicKeyFile); !found {
 		log.Fatal().Msg("The " + publicKeyFile + " varible has not been set")
@@ -44,7 +44,7 @@ func EncryptFunction(_ context.Context, e GCSEvent) error {
 		Str("file", e.Name).
 		Msgf("received encrypt request")
 
-	if err := encrypter.EncryptFile(keyFile, e.Name, e.Bucket, encryptedDestination); err != nil {
+	if err := encrypter.EncryptFile(keyFile, e.Name, e.Bucket, zipDestination); err != nil {
 		log.Err(err).Msg("encrypt failed")
 		return err
 	}
@@ -52,8 +52,6 @@ func EncryptFunction(_ context.Context, e GCSEvent) error {
 	if err := encrypter.DeleteFile(e.Name, e.Bucket); err != nil {
 		return err
 	}
-
-	log.Info().Msgf("file %s encrypted and saved to %s", e.Name, encryptedDestination)
 
 	return nil
 }

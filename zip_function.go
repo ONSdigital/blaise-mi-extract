@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-var encryptionDestination string
+var encryptedDestination string
 var zip zipper.Service
 
 func init() {
@@ -20,8 +20,8 @@ func init() {
 
 	var found bool
 
-	if encryptionDestination, found = os.LookupEnv(encryptLocation); !found {
-		log.Fatal().Msg("The " + encryptLocation + " varible has not been set")
+	if encryptedDestination, found = os.LookupEnv(encryptedLocation); !found {
+		log.Fatal().Msg("The " + encryptedLocation + " varible has not been set")
 		os.Exit(1)
 	}
 }
@@ -33,7 +33,10 @@ func ZipFunction(_ context.Context, e GCSEvent) error {
 		Str("file", e.Name).
 		Msgf("received zip request")
 
-	if err := zip.ZipFile(e.Name, e.Bucket, encryptionDestination); err != nil {
+	var zipName string
+	var err error
+
+	if zipName, err = zip.ZipFile(e.Name, e.Bucket, encryptedDestination); err != nil {
 		log.Err(err).Msg("create zip failed")
 		return err
 	}
@@ -42,7 +45,7 @@ func ZipFunction(_ context.Context, e GCSEvent) error {
 		return err
 	}
 
-	log.Info().Msgf("file %s zipped and saved to %s", e.Name, encryptionDestination)
+	log.Info().Msgf("file %s zipped and saved to %s/%s", e.Name, encryptedDestination, zipName)
 
 	return nil
 }

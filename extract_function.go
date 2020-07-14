@@ -14,7 +14,7 @@ type PubSubMessage struct {
 	Instrument string `json:"instrument_name"`
 }
 
-var zipDestination string
+var encryptDestination string
 var service extractor.Service
 
 func init() {
@@ -25,8 +25,8 @@ func init() {
 
 	var found bool
 
-	if zipDestination, found = os.LookupEnv(zipLocation); !found {
-		log.Fatal().Msg("The " + zipLocation + " varible has not been set")
+	if encryptDestination, found = os.LookupEnv(encryptLocation); !found {
+		log.Fatal().Msg("The " + encryptLocation + " varible has not been set")
 		os.Exit(1)
 	}
 }
@@ -52,7 +52,7 @@ func ExtractFunction(_ context.Context, m PubSubMessage) error {
 
 	destination := m.Instrument + ".csv"
 
-	if err = service.SaveFile(zipDestination, source, destination); err != nil {
+	if err = service.SaveFile(encryptDestination, source, destination); err != nil {
 		return err
 	}
 

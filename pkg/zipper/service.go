@@ -1,12 +1,12 @@
 package zipper
 
 type Repository interface {
-	Zip(fileName, fromDirectory, toDirectory string) error
+	Zip(fileName, fromDirectory, toDirectory string) (string, error)
 	Delete(file, directory string) error
 }
 
 type Service interface {
-	ZipFile(fileName, fromDirectory, toDirectory string) error
+	ZipFile(fileName, fromDirectory, toDirectory string) (string, error)
 	DeleteFile(file, directory string) error
 }
 
@@ -18,7 +18,7 @@ func NewService(r Repository) Service {
 	return &service{r}
 }
 
-func (s service) ZipFile(fileName, fromDirectory, toDirectory string) error {
+func (s service) ZipFile(fileName, fromDirectory, toDirectory string) (string, error) {
 	return s.r.Zip(fileName, fromDirectory, toDirectory)
 }
 
