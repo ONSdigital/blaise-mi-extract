@@ -3,12 +3,12 @@ package mysql
 import (
 	"github.com/ONSDigital/blaise-mi-extractcsv/pkg/extractor"
 	"github.com/rs/zerolog/log"
-	"google.golang.org/api/iterator"
 	"upper.io/db.v3/lib/sqlbuilder"
 )
 
 type ResponseData struct {
 	ResponseData string `db:"response_data"`
+	EOF          bool
 }
 
 // ATM we only have one instrument id
@@ -24,29 +24,32 @@ func (s Storage) ExtractMIHeader(instrument string) (extractor.Instrument, error
 	return i, nil
 }
 
-// return a function that, when called, retrieves the data row-by-row
-func (s Storage) LoadResponseData(name string) error {
+// return an iterator that, when called, retrieves the data row-by-row
+func (s Storage) LoadResponseData(name string) (func() ResponseData, error) {
 
 	rows, err := s.DB.Query(
 		"SELECT response_data from case_response cr, instrument i , where cr.instrument_id = i.id and i.name = ?", name)
 
 	if err != nil {
 		log.Err(err).Msgf("no instruments found in response_data for %s or database error", name)
-		return err
+		return nil, err
 	}
 
 	defer func() { _ = rows.Close() }()
 
 	s.iter = sqlbuilder.NewIterator(rows)
 
-	return nil
+	return s.iterate, nil
 }
 
-func (s Storage) Next() ResponseData {
+// - CHANGE to be a struct returned
+// pull out the mi field values in the response structure which for mi spec are miSpec.SerialNumber and miSpec.Hout
+func (s Storage) iterate() ResponseData {
 	var responseData ResponseData
 	eof := s.iter.Next(&responseData)
 	if eof {
-		_ = s.iter.Close()
+		return ResponseData{nil, false}
 	}
+	responseData.EOF = false
 	return responseData
 }

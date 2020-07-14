@@ -25,7 +25,7 @@ type Instrument struct {
 }
 
 type MiSpec struct {
-	SerialNumber string `json:"serial_nmumber"`
+	SerialNumber string `json:"serial_number"`
 	Hout         string `json:"hout"`
 }
 
