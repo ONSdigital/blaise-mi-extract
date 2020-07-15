@@ -53,17 +53,12 @@ func ExtractFunction(_ context.Context, m PubSubMessage) error {
 func extractMi(instrument string) error {
 	log.Info().Msgf("received extract_mi extract request for %s", instrument)
 
-	var source string
 	var err error
 
-	if source, err = service.ExtractMIInstrument(instrument); err != nil {
-		return err
-	}
-
 	destination := instrument + ".csv"
-
-	if err = service.SaveFile(encryptDestination, source, destination); err != nil {
+	if err = service.ExtractMiInstrument(instrument, encryptDestination, destination); err != nil {
 		return err
 	}
+
 	return nil
 }

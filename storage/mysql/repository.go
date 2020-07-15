@@ -12,7 +12,6 @@ type Storage struct {
 	database string
 	user     string
 	password string
-	iter     sqlbuilder.Iterator
 }
 
 func NewStorage() Storage {
@@ -60,8 +59,5 @@ func (s *Storage) Connect() error {
 func (s Storage) Close() {
 	if s.DB != nil {
 		_ = s.DB.Close()
-	}
-	if iter != nil {
-		_ = iter.Close()
 	}
 }
