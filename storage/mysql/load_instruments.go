@@ -23,12 +23,12 @@ func (s Storage) ExtractMIHeader(instrument string) (extractor.Instrument, error
 func (s Storage) LoadResponseData(name string) (*sql.Rows, error) {
 
 	rows, err := s.DB.Query(
-		`SELECT response_data from case_response cr, instrument i, blaise.case c
+		`select response_data from case_response cr, instrument i, blaise.case c
 			where c.instrument_id = i.id and
 			cr.case_id = c.id and i.name = ?`, name)
 
 	if err != nil {
-		log.Err(err).Msgf("no instruments found in response_data for %s or database error", name)
+		log.Err(err).Msgf("database error reading %s instrument data from response", name)
 		return nil, err
 	}
 

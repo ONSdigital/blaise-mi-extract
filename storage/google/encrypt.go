@@ -43,7 +43,7 @@ func (gs Storage) Encrypt(publicKey, fileName, fromDirectory, toDirectory string
 	}
 
 	if err := encrypt([]*openpgp.Entity{recipient}, nil, storageReader, storageWriter); err != nil {
-		log.Err(err).Msgf("encrypt failes")
+		log.Err(err).Msgf("encrypt failed")
 		return err
 	}
 
