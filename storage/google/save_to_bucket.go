@@ -10,7 +10,7 @@ import (
 
 func (gs Storage) Save(location, sourceFile, destinationFile string) error {
 
-	log.Debug().Msgf("saving to GCloud Bucket; location: %s, sourceFile: %s, destinationFile: %s", location, sourceFile, destinationFile)
+	log.Debug().Msgf("saving to GCloud Bucket; location: %s, source: %s, destination: %s", location, sourceFile, destinationFile)
 
 	ctx := context.Background()
 

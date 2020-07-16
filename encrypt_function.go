@@ -23,14 +23,14 @@ func init() {
 	var found bool
 
 	if zipDestination, found = os.LookupEnv(util.ZipLocation); !found {
-		log.Fatal().Msg("The " + util.ZipLocation + " varible has not been set")
+		log.Fatal().Msg("The " + util.ZipLocation + " variable has not been set")
 		os.Exit(1)
 	}
 
 	log.Info().Msgf("zip destination: %s", zipDestination)
 
 	if keyFile, found = os.LookupEnv(util.PublicKeyFile); !found {
-		log.Fatal().Msg("The " + util.PublicKeyFile + " varible has not been set")
+		log.Fatal().Msg("The " + util.PublicKeyFile + " variable has not been set")
 		os.Exit(1)
 	}
 

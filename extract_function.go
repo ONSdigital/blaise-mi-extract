@@ -24,7 +24,7 @@ func init() {
 	var found bool
 
 	if encryptDestination, found = os.LookupEnv(util.EncryptLocation); !found {
-		log.Fatal().Msg("The " + util.EncryptLocation + " varible has not been set")
+		log.Fatal().Msg("The " + util.EncryptLocation + " variable has not been set")
 		os.Exit(1)
 	}
 

@@ -19,7 +19,7 @@ func NewStorage() Storage {
 	s.loadConfiguration()
 
 	if err := s.Connect(); err != nil {
-		log.Err(err).Msg("Cannot connect to mysql")
+		log.Err(err).Msg("Cannot connect to database")
 	}
 
 	return s
