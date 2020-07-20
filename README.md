@@ -23,24 +23,16 @@ Otherwise functions will be created somewhere far away in the ether...
 
 The following environment variables are available (see the testing section for details on how to create buckets):
 
-* `ENCRYPT_LOCATION=<sandbox>-encrypt` - the location of the `encrypt` bucket
-
-* `ENCRYPTED_LOCATION=<sandbox>-encrypted` - location of the `encrypted` bucket
-
-* `zip_LOCATION=<sandbox>-zip` - location of the `zip` bucket. 
-
-* `LOG_FORMAT=Terminal|json` - log format 
-
 * `PUBLIC_KEY=<path to gpg public key file>` - required to encrypt the zip file
 
-* `ZIP_LOCATION=<bucket>` - the GCloud bucket where the file that needs to be zipped is located. Placed
-there by the `extract_function`
-
 * `ENCRYPT_LOCATION=<bucket>` - the GCloud bucket where the file that needs to be encrypted is located. 
-Placed there by the  `zip_function`
+Placed there by the  `extract_function`
 
-* `ENCRYPTed_LOCATION=<bucket>` - the GCloud bucket where the file that has been encrypted is located. 
+* `ENCRYPTED_LOCATION=<bucket>` - the GCloud bucket where the file that has been encrypted is located. 
 Placed there by the `encrypt_function`
+
+* `ZIP_LOCATION=<bucket>` - the GCloud bucket where the file that needs to be zipped is located. Placed
+there by the `encrypted_function`
 
 * `GOOGLE_APPLICATION_CREDENTIALS=<file>` - google credentials file
 
