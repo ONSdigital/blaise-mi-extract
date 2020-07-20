@@ -21,9 +21,17 @@ Otherwise functions will be created somewhere far away in the ether...
 
 ### Environment Variables
 
-The following environment variables are available:
+The following environment variables are available (see the testing section for details on how to create buckets):
 
-ENCRYPT_LOCATION=ons-blaise-dev-pds-18-mi-encrypt;ENCRYPTED_LOCATION=ons-blaise-dev-pds-18-mi-encrypted;LOG_FORMAT=Terminal;PUBLIC_KEY=pkg/encryption/keys/paul.gpg
+* `ENCRYPT_LOCATION=<sandbox>-encrypt` - the location of the `encrypt` bucket
+
+* `ENCRYPTED_LOCATION=<sandbox>-encrypted` - location of the `encrypted` bucket
+
+* `zip_LOCATION=<sandbox>-zip` - location of the `zip` bucket. 
+
+* `LOG_FORMAT=Terminal|json` - log format 
+
+* `PUBLIC_KEY=<path to gpg public key file>` - required to encrypt the zip file
 
 * `ZIP_LOCATION=<bucket>` - the GCloud bucket where the file that needs to be zipped is located. Placed
 there by the `extract_function`
@@ -41,5 +49,26 @@ If you want pretty coloured output for local testing use `Terminal`
 
 * `Debug=True|False|NotSet` - set debugging
 
+* `DB_SERVER=<server>` - server address
+
+* `DB_DATABASE=<database>` - name of the database, defaults to 'blaise'
+
+* `DB_USER=<user>` - database user
+
+* `DB_PASSWORD=password` - database password
+
 ## Testing
 
+Under the `cmd` directory there is a main.go file which uses the google `FunctionsFramework` to provide some emulation of 
+events. Note however that these events are triggered by an HTTP request rather than an item arriving on a queue. 
+Nevertheless, it provides a means of testing. The corrosponding postman file can be found under the `scripts` directory. 
+
+Note that you will need to run the cloud sql proxy application locally to connect to the mysql instance. A script to
+do so, `run_proxy.sh` is in the `scripts` directory and you will need to change the sandbox name to your own.
+
+
+Add 3 new storage buckets like so before running:
+
+1. gsutil mb gs://<sandbox>-encrypt
+2. gsutil mb gs://<sandbox>-encrypted
+3. gsutil mb gs://<sandbox>-zip

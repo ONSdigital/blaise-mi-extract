@@ -31,7 +31,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\" : \"OPN2002A.csv.zip\",\n    \"bucket\" : \"ons-blaise-dev-pds-18-mi-encrypt\"\n\n}"
+					"raw": "{\n    \"name\" : \"OPN2004A.csv\",\n    \"bucket\" : \"ons-blaise-dev-pds-20-mi-encrypt\"\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/encrypt",
@@ -53,7 +53,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\" : \"OPN2002A.csv\",\n    \"bucket\" : \"ons-blaise-dev-pds-20-mi-zip\"\n}"
+					"raw": "{\n    \"name\" : \"OPN2004A.csv.gpg\",\n    \"bucket\" : \"ons-blaise-dev-pds-20-mi-encrypted\"\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/zip",

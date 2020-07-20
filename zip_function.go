@@ -26,6 +26,7 @@ func init() {
 	}
 }
 
+// handles event from item arriving in the zip bucket
 func ZipFunction(_ context.Context, e util.GCSEvent) error {
 
 	log.Info().

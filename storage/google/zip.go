@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// zip a file and places in the zip location
 func (gs Storage) Zip(fileName, fromDirectory, toDirectory string) (string, error) {
 
 	readBucket := gs.client.Bucket(fromDirectory)

@@ -7,8 +7,9 @@ import (
 	"os"
 )
 
+// emulates the cloud functions
 func main() {
-	funcframework.RegisterEventFunction("/", blaise_mi_extractcsv.ExtractFunction)
+	funcframework.RegisterEventFunction("/extract", blaise_mi_extractcsv.ExtractFunction)
 	funcframework.RegisterEventFunction("/zip", blaise_mi_extractcsv.ZipFunction)
 	funcframework.RegisterEventFunction("/encrypt", blaise_mi_extractcsv.EncryptFunction)
 

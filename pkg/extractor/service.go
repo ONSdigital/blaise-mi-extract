@@ -14,6 +14,7 @@ type Service interface {
 
 type FileRepository interface {
 	CreateFile(location, destinationFile string) (io.Writer, error)
+	CloseFile()
 }
 
 type DBRepository interface {
@@ -25,15 +26,12 @@ type Instrument struct {
 	Spec string `db:"mi_spec"`
 }
 
-type MiSpec struct {
-	Variables []string `json:"variables"`
-}
-
 type service struct {
 	fileRepository FileRepository
 	dbRepository   DBRepository
 }
 
+// create a new service instance
 func NewService(fileRepository FileRepository, dbRepository DBRepository) Service {
 	return &service{fileRepository: fileRepository, dbRepository: dbRepository}
 }
@@ -49,14 +47,15 @@ func (s service) ExtractMiInstrument(instrument, destination, destinationFile st
 	}
 
 	// extract structure from the json
-	var miSpec MiSpec
+	var miSpec = map[string]string{}
 	err = json.Unmarshal([]byte(headerJSON.Spec), &miSpec)
+
 	if err != nil {
 		log.Warn().Msgf("cannot convert MiSpec to structure. Check structure definition")
 		return err
 	}
 
-	// defer calling this until we know we actually have data
+	// defer calling this until we know we actually have some data
 	var createCSV = func() (*csv.Writer, error) {
 		var c io.Writer
 
@@ -66,14 +65,17 @@ func (s service) ExtractMiInstrument(instrument, destination, destinationFile st
 			return nil, err
 		}
 		csvFile := csv.NewWriter(c)
-
 		return csvFile, nil
 	}
 
 	// defer calling this until we know we actually have data
 	var writeHeader = func(csvFile *csv.Writer) error {
 		// write the header
-		err = csvFile.Write(miSpec.Variables)
+		keys := make([]string, 0, len(miSpec))
+		for key := range miSpec {
+			keys = append(keys, key)
+		}
+		err = csvFile.Write(keys)
 		if err != nil {
 			log.Err(err).Msgf("cannot write CSV header")
 			return err
@@ -87,7 +89,11 @@ func (s service) ExtractMiInstrument(instrument, destination, destinationFile st
 		return nil
 	}
 
-	defer func() { _ = rows.Close() }()
+	defer func() {
+		if rows != nil {
+			_ = rows.Close()
+		}
+	}()
 
 	var csvCreated = false
 	var csvFile *csv.Writer
@@ -107,9 +113,7 @@ func (s service) ExtractMiInstrument(instrument, destination, destinationFile st
 			}
 		}
 
-		var r []string
 		var js string
-
 		err := rows.Scan(&js)
 		if err != nil {
 			log.Err(err).Msg("row scan failed")
@@ -123,7 +127,9 @@ func (s service) ExtractMiInstrument(instrument, destination, destinationFile st
 			return nil
 		}
 
-		for _, v := range miSpec.Variables { // iterate over header values
+		var r []string
+
+		for _, v := range miSpec { // iterate over header values
 			if val, ok := m[v]; ok {
 				r = append(r, val)
 			} else {
@@ -136,6 +142,9 @@ func (s service) ExtractMiInstrument(instrument, destination, destinationFile st
 			log.Err(err).Msgf("cannot write CSV row")
 			return err
 		}
+
+		r = nil
+
 	}
 
 	if !csvCreated {
@@ -144,6 +153,8 @@ func (s service) ExtractMiInstrument(instrument, destination, destinationFile st
 	}
 
 	csvFile.Flush()
+
+	s.fileRepository.CloseFile()
 
 	return nil
 }

@@ -8,33 +8,41 @@ import (
 
 type Storage struct {
 	DB       sqlbuilder.Database
-	server   string
-	database string
-	user     string
-	password string
+	Server   string
+	Database string
+	User     string
+	Password string
 }
 
-func NewStorage() Storage {
+func NewStorage(database string, options ...func(*Storage)) *Storage {
 	s := Storage{}
-	s.loadConfiguration()
+
+	s.Database = database
+
+	for _, option := range options {
+		if option != nil {
+			option(&s)
+		}
+	}
 
 	if err := s.Connect(); err != nil {
 		log.Err(err).Msg("Cannot connect to database")
 	}
 
-	return s
+	return &s
 }
 
+// connect to the database. Options (database, user etc.) have been set in NewStorage
 func (s *Storage) Connect() error {
 	var settings = mysql.ConnectionURL{
-		Database: s.database,
-		Host:     s.server,
-		User:     s.user,
-		Password: s.password,
+		Database: s.Database,
+		Host:     s.Server,
+		User:     s.User,
+		Password: s.Password,
 	}
 
 	log.Debug().
-		Str("databaseName", s.database).
+		Str("databaseName", s.Database).
 		Msg("Connecting to database")
 
 	sess, err := mysql.Open(settings)
@@ -42,13 +50,13 @@ func (s *Storage) Connect() error {
 	if err != nil {
 		log.Error().
 			Err(err).
-			Str("databaseName", s.database).
+			Str("databaseName", s.Database).
 			Msg("Cannot connect to database")
 		return err
 	}
 
 	log.Debug().
-		Str("databaseName", s.database).
+		Str("databaseName", s.Database).
 		Msg("Connected to database")
 
 	s.DB = sess

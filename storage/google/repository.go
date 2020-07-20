@@ -9,6 +9,7 @@ import (
 
 type Storage struct {
 	client *storage.Client
+	writer *storage.Writer
 }
 
 func NewStorage() Storage {
@@ -17,6 +18,8 @@ func NewStorage() Storage {
 		log.Err(err).Msg("Cannot get GCloud Storage Bucket")
 		os.Exit(1)
 	}
+
+	log.Debug().Msg("NewStorage called")
 
 	return Storage{client: client}
 }

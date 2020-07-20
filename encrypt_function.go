@@ -37,6 +37,7 @@ func init() {
 	log.Info().Msgf("public key file: %s", keyFile)
 }
 
+// handles event from item arriving in the encrypt  bucket
 func EncryptFunction(_ context.Context, e util.GCSEvent) error {
 
 	log.Info().

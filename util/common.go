@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+// common structures
+
 const (
 	EncryptedLocation = "ZIP_LOCATION"
 	EncryptLocation   = "ENCRYPT_LOCATION"
@@ -13,8 +15,10 @@ const (
 	User              = "DB_USER"
 	Password          = "DB_PASSWORD"
 	Database          = "DB_DATABASE"
+	DefaultDatabase   = "blase"
 )
 
+// google storage events data
 type GCSEvent struct {
 	Kind                    string                 `json:"kind"`
 	ID                      string                 `json:"id"`

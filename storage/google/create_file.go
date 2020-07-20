@@ -8,7 +8,7 @@ import (
 
 // create a file in a bucket and return the io.Writer for streaming
 
-func (gs Storage) CreateFile(location, destinationFile string) (io.Writer, error) {
+func (gs *Storage) CreateFile(location, destinationFile string) (io.Writer, error) {
 
 	log.Debug().Msgf("create %s/%s", location, destinationFile)
 
@@ -21,5 +21,18 @@ func (gs Storage) CreateFile(location, destinationFile string) (io.Writer, error
 	}
 
 	obj := bh.Object(destinationFile)
-	return obj.NewWriter(ctx), nil
+	gs.writer = obj.NewWriter(ctx)
+
+	return gs.writer, nil
+}
+
+func (gs Storage) CloseFile() {
+	if gs.writer != nil {
+		err := gs.writer.Close()
+		if err != nil {
+			log.Err(err).Msg("close bucket failed")
+			return
+		}
+		log.Debug().Msg("closed bucket")
+	}
 }
