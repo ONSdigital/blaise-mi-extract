@@ -1,5 +1,7 @@
 #!/bin/bash
 
+gcloud config set functions/region europe-west2
+
 gcloud functions deploy EncryptFunction --runtime go113 --trigger-resource ons-blaise-dev-pds-20-mi-zip \
   --trigger-event google.storage.object.finalize \
   --set-env-vars "DEBUG=True" \
