@@ -7,6 +7,7 @@ gcloud functions deploy EncryptFunction --runtime go113 --trigger-resource ons-b
   --set-env-vars "DEBUG=True" \
   --set-env-vars "ZIP_LOCATION=ons-blaise-dev-pds-20-mi-zip" \
   --set-env-vars "ENCRYPTED_LOCATION=ons-blaise-dev-pds-20-mi-encrypted" \
+  --set-env-vars "PUBLIC_KEY=pkg/encryption/keys/preprod-key.gpg" \
   --set-env-vars "ENCRYPT_LOCATION=ons-blaise-dev-pds-20-mi-encrypt"
 
 gcloud alpha functions add-iam-policy-binding EncryptFunction --member=allUsers --role=roles/cloudfunctions.invoker
