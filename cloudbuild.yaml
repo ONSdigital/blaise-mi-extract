@@ -1,19 +1,26 @@
 steps:
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
-  id: create tarball from source
-  entrypoint: /bin/tar
-  args:
-    - -czvf
-    - /mnt/testing/blaise-mi-extract-csv.tar.gz
-    - ./blaise-mi-extractcsv
-  volumes:
-    - name: "scratch"
-      path: /mnt/testing
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
-  id: push zip to functions source bucket
-  entrypoint: gsutil
-  args:
-    - -m
-    - cp
-    - /mnt/testing/blaise-mi-extract-csv.tar.gz
-    - gs://ons-blaise-dev-blaise-cloud-functions-source/
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: "create zip from source"
+    entrypoint: "/bin/bash"
+    args:
+      - "-c"
+      - |
+        set -x && \
+        apt-get update && \
+        apt-get install -y zip && \
+        ls && \
+        zip /mnt/testing/blaise-mi-extract.zip ./*
+    volumes:
+      - name: "scratch"
+        path: /mnt/testing
+
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: "push zip to functions source bucket"
+    entrypoint: "/bin/bash"
+    args:
+      - "-c"
+      - |
+        gsutil cp /mnt/testing/blaise-mi-extract.zip gs://ons-blaise-dev-blaise-cloud-functions-source/
+    volumes:
+      - name: "scratch"
+        path: /mnt/testing

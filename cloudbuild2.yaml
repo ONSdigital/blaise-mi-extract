@@ -1,0 +1,13 @@
+steps:
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: create tarball from source
+  entrypoint: /bin/bash
+  args:
+    - -ce
+    - |
+      ls
+      touch /mnt/testing/scratch
+      echo "testing2"
+  volumes:
+     - name: "scratch"
+       path: /mnt/testing
