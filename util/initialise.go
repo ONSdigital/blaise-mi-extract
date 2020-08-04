@@ -1,6 +1,7 @@
 package util
 
 import (
+	"github.com/mattn/go-colorable"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -22,7 +23,7 @@ func Initialise() {
 	if terminal, isFound := os.LookupEnv(LogFormat); isFound {
 		switch terminal {
 		case Terminal:
-			log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, NoColor: false, TimeFormat: time.Stamp})
+			log.Logger = log.Output(zerolog.ConsoleWriter{Out: colorable.NewColorableStdout(), NoColor: false, TimeFormat: time.Stamp})
 		case Json:
 			// json is the default
 		}
