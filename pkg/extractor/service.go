@@ -1,7 +1,6 @@
 package extractor
 
 import (
-	"database/sql"
 	"encoding/csv"
 	"encoding/json"
 	"github.com/rs/zerolog/log"
@@ -18,12 +17,17 @@ type FileRepository interface {
 }
 
 type DBRepository interface {
-	ExtractMIHeader(instrument string) (Instrument, error)
-	LoadResponseData(name string) (*sql.Rows, error)
+	GetMISpecs(instrument string) ([]MISpec, error)
+	LoadResponseData(name string) ([]ResponseData, error)
 }
 
-type Instrument struct {
-	Spec string `db:"mi_spec"`
+type ResponseData struct {
+	ResponseData string `db:"response_data"`
+}
+
+type MISpec struct {
+	Header      string `db:"header_name"`
+	ResponseKey string `db:"response_key"`
 }
 
 type service struct {
@@ -38,87 +42,47 @@ func NewService(fileRepository FileRepository, dbRepository DBRepository) Servic
 
 // extract data from the database and save as a csv
 func (s service) ExtractMiInstrument(instrument, destination, destinationFile string) error {
-
-	var headerJSON Instrument
+	var miSpec []MISpec
+	var responseData []ResponseData
 	var err error
 
-	if headerJSON, err = s.dbRepository.ExtractMIHeader(instrument); err != nil {
+	if miSpec, err = s.dbRepository.GetMISpecs(instrument); err != nil {
 		return err // error already shown
 	}
 
-	// extract structure from the json
-	var miSpec = map[string]string{}
-	err = json.Unmarshal([]byte(headerJSON.Spec), &miSpec)
-
+	responseData, err = s.dbRepository.LoadResponseData(instrument)
 	if err != nil {
-		log.Warn().Msgf("cannot convert MiSpec to structure. Check structure definition")
+		return err // error already shown
+	}
+
+	if len(responseData) == 0 {
+		log.Warn().Msgf("no response data found for instrument: %s", instrument)
+		return nil
+	}
+
+	var c io.Writer
+	c, err = s.fileRepository.CreateFile(destination, destinationFile)
+	if err != nil {
+		log.Err(err).Msgf("cannot create CSV file")
 		return err
 	}
 
-	// defer calling this until we know we actually have some data
-	var createCSV = func() (*csv.Writer, error) {
-		var c io.Writer
-
-		c, err = s.fileRepository.CreateFile(destination, destinationFile)
-		if err != nil {
-			log.Err(err).Msgf("cannot create CSV file")
-			return nil, err
-		}
-		csvFile := csv.NewWriter(c)
-		return csvFile, nil
+	csvFile := csv.NewWriter(c)
+	// write header line
+	keys := make([]string, len(miSpec))
+	for i := 0; i < len(miSpec); i++ {
+		keys[i] = miSpec[i].Header
 	}
 
-	// defer calling this until we know we actually have data
-	var writeHeader = func(csvFile *csv.Writer) error {
-		// write the header
-		keys := make([]string, 0, len(miSpec))
-		for key := range miSpec {
-			keys = append(keys, key)
-		}
-		err = csvFile.Write(keys)
-		if err != nil {
-			log.Err(err).Msgf("cannot write CSV header")
-			return err
-		}
-		return nil
-	}
-
-	rows, err := s.dbRepository.LoadResponseData(instrument)
+	err = csvFile.Write(keys)
 	if err != nil {
-		log.Err(err).Msg("cannot load response data")
-		return nil
+		log.Err(err).Msgf("cannot write CSV header")
+		return err
 	}
 
-	defer func() {
-		if rows != nil {
-			_ = rows.Close()
-		}
-	}()
-
-	var csvCreated = false
-	var csvFile *csv.Writer
-
-	for rows.Next() {
-		// we have at least one row
-		// so create the file and write the header; Ugly
-		if !csvCreated {
-			if csvFile, err = createCSV(); err != nil {
-				log.Err(err).Msg("cannot create CSV file")
-				return nil
-			}
-			csvCreated = true
-			if err := writeHeader(csvFile); err != nil {
-				log.Err(err).Msg("cannot write CSV header")
-				return nil
-			}
-		}
-
-		var js string
-		err := rows.Scan(&js)
-		if err != nil {
-			log.Err(err).Msg("row scan failed")
-			return nil
-		}
+	// write rows
+	for i := 0; i < len(responseData); i++ {
+		var js = responseData[i].ResponseData
 
 		m := map[string]string{}
 		err = json.Unmarshal([]byte(js), &m)
@@ -128,8 +92,9 @@ func (s service) ExtractMiInstrument(instrument, destination, destinationFile st
 		}
 
 		var r []string
+		for i := 0; i < len(miSpec); i++ {
+			var v = miSpec[i].ResponseKey
 
-		for _, v := range miSpec { // iterate over header values
 			if val, ok := m[v]; ok {
 				r = append(r, val)
 			} else {
@@ -144,16 +109,9 @@ func (s service) ExtractMiInstrument(instrument, destination, destinationFile st
 		}
 
 		r = nil
-
-	}
-
-	if !csvCreated {
-		log.Warn().Msgf("no response data found for instrument: %s", instrument)
-		return nil
 	}
 
 	csvFile.Flush()
-
 	s.fileRepository.CloseFile()
 
 	return nil

@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"action\":\"extract_mi\",\"instrument_name\":\"OPN2002A\"}"
+					"raw": "{\"action\":\"extract_mi\",\"instrument_name\":\"OPN2004A\"}"
 				},
 				"url": {
 					"raw": "localhost:8080",

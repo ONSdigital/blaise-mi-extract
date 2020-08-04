@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gcloud functions deploy ExtractFunction --runtime go113 --trigger-resource ons-blaise-dev-pds-20-mi-zip \
+gcloud functions deploy ExtractFunction --runtime go113 --trigger-resource ons-blaise-dev-pds-20-mi-extract \
   --trigger-event google.storage.object.finalize \
   --set-env-vars "DEBUG=True" \
   --set-env-vars "ZIP_LOCATION=ons-blaise-dev-pds-20-mi-zip" \
