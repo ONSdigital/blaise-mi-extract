@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// zip a file and places in the zip location
+// compress a file and places in the compress location
 func (gs Storage) Zip(fileName, fromDirectory, toDirectory string) (string, error) {
 
 	readBucket := gs.client.Bucket(fromDirectory)
@@ -34,7 +34,7 @@ func (gs Storage) Zip(fileName, fromDirectory, toDirectory string) (string, erro
 	currentTime := time.Now()
 	t := strings.TrimSuffix(fileName, filepath.Ext(fileName)) // strip off .gpg suffix
 	u := strings.TrimSuffix(t, filepath.Ext(t))               // strip off .csv suffix
-	name := "mi_" + u + "_" + currentTime.Format("02012006") + "_" + currentTime.Format("150505") + ".zip"
+	name := "mi_" + u + "_" + currentTime.Format("02012006") + "_" + currentTime.Format("150505") + ".compress"
 
 	writeObj := writeBucket.Object(name)
 
@@ -44,17 +44,17 @@ func (gs Storage) Zip(fileName, fromDirectory, toDirectory string) (string, erro
 	zipWriter := zip.NewWriter(storageWriter)
 	defer func() { _ = zipWriter.Close() }()
 
-	// add filename to zip
+	// add filename to compress
 	zipFile, err := zipWriter.Create(fileName)
 	if err != nil {
-		log.Err(err).Msgf("error adding file to zip: %s in directory %s", name+".zip", toDirectory)
+		log.Err(err).Msgf("error adding file to compress: %s in directory %s", name+".compress", toDirectory)
 		return "", err
 	}
 
 	_, err = io.Copy(zipFile, storageReader)
 
 	if err != nil {
-		log.Err(err).Msgf("error creating zip file: %s in directory %s", fileName+".zip", toDirectory)
+		log.Err(err).Msgf("error creating compress file: %s in directory %s", fileName+".compress", toDirectory)
 		return "", err
 	}
 

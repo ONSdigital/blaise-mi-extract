@@ -1,7 +1,9 @@
 package mysql
 
 import (
+	"fmt"
 	"github.com/rs/zerolog/log"
+	"os"
 	"upper.io/db.v3/lib/sqlbuilder"
 	"upper.io/db.v3/mysql"
 )
@@ -34,16 +36,18 @@ func NewStorage(database string, options ...func(*Storage)) *Storage {
 
 // connect to the database. Options (database, user etc.) have been set in NewStorage
 func (s *Storage) Connect() error {
-	var settings = mysql.ConnectionURL{
-		Database: s.Database,
-		Host:     s.Server,
-		User:     s.User,
-		Password: s.Password,
+
+	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
+	if !isSet {
+		socketDir = "/cloudsql"
 	}
 
-	log.Debug().
-		Str("databaseName", s.Database).
-		Msg("Connecting to database")
+	dbURI := fmt.Sprintf("%s:%s@unix(/%s/%s)/%s?parseTime=true", s.User, s.Password, socketDir,
+		s.Server, s.Database)
+
+	log.Info().Str("Connection string", dbURI).Msg("Connecting to DB")
+
+	settings, err := mysql.ParseURL(dbURI)
 
 	sess, err := mysql.Open(settings)
 

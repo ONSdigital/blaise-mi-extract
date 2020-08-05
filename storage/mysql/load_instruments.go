@@ -1,7 +1,7 @@
 package mysql
 
 import (
-	"github.com/ONSDigital/blaise-mi-extractcsv/pkg/extractor"
+	"github.com/ONSDigital/blaise-mi-extract/pkg/extractor"
 	"github.com/rs/zerolog/log"
 )
 

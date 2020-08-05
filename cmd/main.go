@@ -2,16 +2,16 @@ package main
 
 import (
 	"github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	blaise_mi_extractcsv "github.com/ONSDigital/blaise-mi-extractcsv"
+	funcs "github.com/ONSDigital/blaise-mi-extract"
 	"log"
 	"os"
 )
 
 // emulates the cloud functions
 func main() {
-	funcframework.RegisterEventFunction("/extract", blaise_mi_extractcsv.ExtractFunction)
-	funcframework.RegisterEventFunction("/zip", blaise_mi_extractcsv.ZipFunction)
-	funcframework.RegisterEventFunction("/encrypt", blaise_mi_extractcsv.EncryptFunction)
+	funcframework.RegisterEventFunction("/extract", funcs.ExtractFunction)
+	funcframework.RegisterEventFunction("/zip", funcs.ZipFunction)
+	funcframework.RegisterEventFunction("/encrypt", funcs.EncryptFunction)
 
 	// Use PORT environment variable, or default to 8080.
 	port := "8080"
