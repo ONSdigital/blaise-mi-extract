@@ -9,10 +9,10 @@ steps:
         apt-get update && \
         apt-get install -y zip && \
         ls && \
-        zip /mnt/testing/blaise-mi-extract.zip ./*
+        zip /mnt/data/blaise-mi-extract.zip ./*
     volumes:
-      - name: "scratch"
-        path: /mnt/testing
+      - name: "data"
+        path: /mnt/data
 
   - name: "gcr.io/cloud-builders/gcloud"
     id: "push zip to functions source bucket"
@@ -20,7 +20,51 @@ steps:
     args:
       - "-c"
       - |
-        gsutil cp /mnt/testing/blaise-mi-extract.zip gs://ons-blaise-dev-blaise-cloud-functions-source/
+        gsutil cp /mnt/data/blaise-mi-extract.zip gs://ons-blaise-dev-blaise-cloud-functions-source/
     volumes:
-      - name: "scratch"
-        path: /mnt/testing
+      - name: "data"
+        path: /mnt/data
+
+  # - name: "gcr.io/cloud-builders/gcloud"
+  #   id: "Trigger deploy of ExtractFunction from new zip"
+  #   args:
+  #   - functions
+  #   - deploy
+  #   - ExtractFunction 
+  #   - --source=/mnt/data/blaise-mi-extract.zip
+  #   - --entry-point=ExtractFunction
+  #   - --region=europe-west2 
+  #   - --runtime=go113
+  #   - --trigger-event=google.pubsub.topic.publish
+  #   - --trigger-resource=ons-blaise-dev-extract-topic
+  #   volumes:
+  #     - name: "data"
+  #       path: /mnt/data
+
+  # - name: "gcr.io/cloud-builders/gcloud"
+  #   id: "Trigger deploy of EncryptFunction from new zip"
+  #   args:
+  #   - functions
+  #   - deploy
+  #   - ExtractFunction 
+  #   - --source=/mnt/data/blaise-mi-extract.zip
+  #   - --region=europe-west2 
+  #   - --runtime=go113
+  #   - --set-env-vars=
+  #   volumes:
+  #     - name: "data"
+  #       path: /mnt/data
+
+  # - name: "gcr.io/cloud-builders/gcloud"
+  #   id: "Trigger deploy of ZipFunction from new zip"
+  #   args:
+  #   - functions
+  #   - deploy
+  #   - ExtractFunction 
+  #   - --source=/mnt/data/blaise-mi-extract.zip
+  #   - --region=europe-west2 
+  #   - --runtime=go113
+  #   - --set-env-vars=
+  #   volumes:
+  #     - name: "data"
+  #       path: /mnt/data
