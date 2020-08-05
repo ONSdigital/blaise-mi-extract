@@ -27,23 +27,22 @@ func NewStorage(database string, options ...func(*Storage)) *Storage {
 		}
 	}
 
-	if err := s.Connect(); err != nil {
-		log.Err(err).Msg("Cannot connect to database")
-	}
-
 	return &s
 }
 
 // connect to the database. Options (database, user etc.) have been set in NewStorage
 func (s *Storage) Connect() error {
 
+	var dbURI string
 	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
-	if !isSet {
-		socketDir = "/cloudsql"
-	}
 
-	dbURI := fmt.Sprintf("%s:%s@unix(/%s/%s)/%s?parseTime=true", s.User, s.Password, socketDir,
-		s.Server, s.Database)
+	if !isSet {
+		dbURI = fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", s.User, s.Password, s.Server,
+			s.Database)
+	} else {
+		dbURI = fmt.Sprintf("%s:%s@unix(/%s/%s)/%s?parseTime=true", s.User, s.Password, socketDir,
+			s.Server, s.Database)
+	}
 
 	log.Info().Str("Connection string", dbURI).Msg("Connecting to DB")
 
