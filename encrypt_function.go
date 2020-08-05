@@ -2,9 +2,9 @@ package blaise_mi_extractcsv
 
 import (
 	"context"
-	"github.com/ONSDigital/blaise-mi-extractcsv/pkg/encryption"
-	"github.com/ONSDigital/blaise-mi-extractcsv/storage/google"
-	"github.com/ONSDigital/blaise-mi-extractcsv/util"
+	"github.com/ONSDigital/blaise-mi-extract/pkg/encryption"
+	"github.com/ONSDigital/blaise-mi-extract/storage/google"
+	"github.com/ONSDigital/blaise-mi-extract/util"
 	"github.com/rs/zerolog/log"
 	"os"
 )
