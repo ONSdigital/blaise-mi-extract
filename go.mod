@@ -1,4 +1,4 @@
-module github.com/ONSDigital/blaise-mi-extractcsv
+module github.com/ONSDigital/blaise-mi-extract
 
 go 1.13
 
