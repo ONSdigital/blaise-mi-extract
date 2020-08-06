@@ -10,8 +10,8 @@ import (
 // emulates the cloud functions
 func main() {
 	funcframework.RegisterEventFunction("/extract", funcs.ExtractFunction)
-	//funcframework.RegisterEventFunction("/zip", funcs.ZipFunction)
-	//funcframework.RegisterEventFunction("/encrypt", funcs.EncryptFunction)
+	funcframework.RegisterEventFunction("/zip", funcs.ZipFunction)
+	funcframework.RegisterEventFunction("/encrypt", funcs.EncryptFunction)
 
 	// Use PORT environment variable, or default to 8080.
 	port := "8080"

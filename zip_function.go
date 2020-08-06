@@ -2,11 +2,11 @@ package blaise_mi_extract
 
 import (
 	"context"
-	"github.com/ONSDigital/blaise-mi-extract/compress"
-	"github.com/ONSDigital/blaise-mi-extract/util"
+	"github.com/ONSDigital/blaise-mi-extract/pkg"
+	"github.com/ONSDigital/blaise-mi-extract/pkg/util"
 )
 
 // Proxy function to the real function
-func ZipFunction(_ context.Context, e util.GCSEvent) error {
-	return compress.ZipCompress(e.Name, e.Bucket)
+func ZipFunction(ctx context.Context, e util.GCSEvent) error {
+	return pkg.ZipCompress(ctx, e.Name, e.Bucket)
 }
