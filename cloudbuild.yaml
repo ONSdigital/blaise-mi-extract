@@ -37,34 +37,28 @@ steps:
     - --runtime=go113
     - --trigger-event=google.pubsub.topic.publish
     - --trigger-resource=ons-blaise-dev-extract-topic
-    volumes:
-      - name: "data"
-        path: /mnt/data
+
 
   - name: "gcr.io/cloud-builders/gcloud"
     id: "Trigger deploy of EncryptFunction from new zip"
     args:
     - functions
     - deploy
-    - ExtractFunction 
+    - EncryptFunction 
     - --source=gs://ons-blaise-dev-blaise-cloud-functions-source/blaise-mi-extract.zip
     - --region=europe-west2 
     - --runtime=go113
-    - --set-env-vars=
-    volumes:
-      - name: "data"
-        path: /mnt/data
+    - --trigger-event=google.storage.object.finalize
+    - --trigger-resource=ons-blaise-dev-encrypted
 
   - name: "gcr.io/cloud-builders/gcloud"
     id: "Trigger deploy of ZipFunction from new zip"
     args:
     - functions
     - deploy
-    - ExtractFunction 
+    - ZipFunction
     - --source=gs://ons-blaise-dev-blaise-cloud-functions-source/blaise-mi-extract.zip
     - --region=europe-west2 
     - --runtime=go113
-    - --set-env-vars=
-    volumes:
-      - name: "data"
-        path: /mnt/data
+    - --trigger-event=google.storage.object.finalize
+    - --trigger-resource=ons-blaise-dev-zip
