@@ -7,9 +7,9 @@ import (
 // common structures
 
 const (
-	EncryptedLocation = "ZIP_LOCATION"
+	EncryptedLocation = "ENCRYPTED_LOCATION"
 	EncryptLocation   = "ENCRYPT_LOCATION"
-	ZipLocation       = "ENCRYPTED_LOCATION"
+	ZipLocation       = "ZIP_LOCATION"
 	PublicKeyFile     = "PUBLIC_KEY"
 	Server            = "DB_SERVER"
 	User              = "DB_USER"
