@@ -31,7 +31,7 @@ steps:
     - functions
     - deploy
     - ExtractFunction 
-    - --source=/mnt/data/blaise-mi-extract.zip
+    - --source=gs://ons-blaise-dev-blaise-cloud-functions-source/blaise-mi-extract.zip
     - --entry-point=ExtractFunction
     - --region=europe-west2 
     - --runtime=go113
@@ -47,7 +47,7 @@ steps:
     - functions
     - deploy
     - ExtractFunction 
-    - --source=/mnt/data/blaise-mi-extract.zip
+    - --source=gs://ons-blaise-dev-blaise-cloud-functions-source/blaise-mi-extract.zip
     - --region=europe-west2 
     - --runtime=go113
     - --set-env-vars=
@@ -61,7 +61,7 @@ steps:
     - functions
     - deploy
     - ExtractFunction 
-    - --source=/mnt/data/blaise-mi-extract.zip
+    - --source=gs://ons-blaise-dev-blaise-cloud-functions-source/blaise-mi-extract.zip
     - --region=europe-west2 
     - --runtime=go113
     - --set-env-vars=
