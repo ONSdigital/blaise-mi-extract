@@ -1,10 +1,11 @@
-package extract
+package pkg
 
 import (
+	"context"
 	"github.com/ONSDigital/blaise-mi-extract/pkg/extractor"
-	"github.com/ONSDigital/blaise-mi-extract/storage/google"
-	"github.com/ONSDigital/blaise-mi-extract/storage/mysql"
-	"github.com/ONSDigital/blaise-mi-extract/util"
+	"github.com/ONSDigital/blaise-mi-extract/pkg/storage/google"
+	"github.com/ONSDigital/blaise-mi-extract/pkg/storage/mysql"
+	"github.com/ONSDigital/blaise-mi-extract/pkg/util"
 	"github.com/rs/zerolog/log"
 	"os"
 	"sync"
@@ -16,12 +17,12 @@ type PubSubMessage struct {
 }
 
 var encryptDestination string
-var service extractor.Service
-var doOnce sync.Once
+var extOnce sync.Once
+var db extractor.DBRepository
 
-// sets up the database connection options and connects
-// lazy call to avoid issues with multiple init() functions
-func initialise() {
+// Sets up the database connection options and connects.
+// Lazy call to avoid issues with multiple init() functions
+func initialiseExtract() {
 
 	util.Initialise()
 
@@ -64,36 +65,37 @@ func initialise() {
 		db.Password = pwd
 	}
 
-	db := mysql.NewStorage(database, server, user, password)
+	db = mysql.NewStorage(database, server, user, password)
 
 	if err := db.Connect(); err != nil {
-		// errors have already been reported and we can't continue
+		// errors have already been reported and we can't continue so stop
 		os.Exit(1)
 	}
-
-	gcloud := google.NewStorage()
-
-	service = extractor.NewService(&gcloud, db)
 
 }
 
 // handle extract request events from publish / subscribe  queue
-func HandleExtractionRequest(m PubSubMessage) error {
-	doOnce.Do(func() {
-		initialise()
+func HandleExtractionRequest(ctx context.Context, m PubSubMessage) error {
+
+	extOnce.Do(func() {
+		initialiseExtract()
 	})
+
+	gcloudStorage := google.NewStorage(ctx)
+	service := extractor.NewService(ctx, &gcloudStorage, db)
+
 	// add additional actions as needed
 	switch m.Action {
 	case "extract_mi":
-		return extractMi(m.Instrument)
+		return extractMi(service, m.Instrument)
 	default:
 		log.Warn().Msgf("message rejected, unknown action -> [%s]", m.Action)
 		return nil
 	}
 }
 
-func extractMi(instrument string) error {
-	log.Info().Msgf("received extract_mi extract request for %s", instrument)
+func extractMi(service extractor.Service, instrument string) error {
+	log.Info().Msgf("received extract_mi request for %s", instrument)
 
 	var err error
 
@@ -101,6 +103,8 @@ func extractMi(instrument string) error {
 	if err = service.ExtractMiInstrument(instrument, encryptDestination, destination); err != nil {
 		return err
 	}
+
+	log.Info().Msgf("extract_mi request for %s completed", instrument)
 
 	return nil
 }

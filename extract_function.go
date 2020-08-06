@@ -2,10 +2,11 @@ package blaise_mi_extract
 
 import (
 	"context"
-	"github.com/ONSDigital/blaise-mi-extract/extract"
+	"github.com/ONSDigital/blaise-mi-extract/pkg"
+
 )
 
 // Proxy function to the real function
-func ExtractFunction(_ context.Context, m extract.PubSubMessage) error {
-	return extract.HandleExtractionRequest(m)
+func ExtractFunction(ctx context.Context, m pkg.PubSubMessage) error {
+	return pkg.HandleExtractionRequest(ctx, m)
 }

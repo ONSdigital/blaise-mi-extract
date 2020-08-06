@@ -1,6 +1,7 @@
 package extractor
 
 import (
+	"context"
 	"encoding/csv"
 	"encoding/json"
 	"github.com/rs/zerolog/log"
@@ -13,12 +14,15 @@ type Service interface {
 
 type FileRepository interface {
 	CreateFile(location, destinationFile string) (io.Writer, error)
+	DeleteFile(file, directory string) error
 	CloseFile()
 }
 
 type DBRepository interface {
 	GetMISpecs(instrument string) ([]MISpec, error)
 	LoadResponseData(name string) ([]ResponseData, error)
+	Close()
+	Connect() error
 }
 
 type ResponseData struct {
@@ -33,11 +37,12 @@ type MISpec struct {
 type service struct {
 	fileRepository FileRepository
 	dbRepository   DBRepository
+	ctx            context.Context
 }
 
 // create a new service instance
-func NewService(fileRepository FileRepository, dbRepository DBRepository) Service {
-	return &service{fileRepository: fileRepository, dbRepository: dbRepository}
+func NewService(ctx context.Context, fileRepo FileRepository, dbRepo DBRepository) Service {
+	return &service{ctx: ctx, fileRepository: fileRepo, dbRepository: dbRepo}
 }
 
 // extract data from the database and save as a csv
