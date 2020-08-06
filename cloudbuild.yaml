@@ -9,7 +9,7 @@ steps:
         apt-get update && \
         apt-get install -y zip && \
         ls && \
-        zip /mnt/data/blaise-mi-extract.zip ./*
+        zip -r /mnt/data/blaise-mi-extract.zip ./*
     volumes:
       - name: "data"
         path: /mnt/data
