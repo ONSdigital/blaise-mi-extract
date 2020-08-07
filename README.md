@@ -3,7 +3,7 @@
 
 This package contains three seperate functions that operate as follows:
 
-ExtractFunction => **ENCRYPT_LOCATION** => EncryptFunction => **ZIP_LOCATION** => ZIPFunction => **ENCRYPTED_LOCATION**
+ExtractFunction => **ENCRYPT_LOCATION** => EncryptFunction => **ENCRYPTED_LOCATION** => ZIPFunction => **ZIP_LOCATION**
 
 GCP storage triggers have been used to send notifications that a file has arrived in a bucket.
 
@@ -17,7 +17,7 @@ Set the default functions region:
 
 `gcloud config set functions/region europe-west2`
 
-Otherwise functions will be created somewhere far away in the ether...
+Otherwise, functions will be created somewhere far away in the ether...
 
 ### Environment Variables
 
@@ -26,13 +26,13 @@ The following environment variables are available (see the testing section for d
 * `PUBLIC_KEY=<path to gpg public key file>` - required to encrypt the zip file
 
 * `ENCRYPT_LOCATION=<bucket>` - the GCloud bucket where the file that needs to be encrypted is located. 
-Placed there by the  `extract_function`
+Placed there by the `extract_function`.
 
 * `ENCRYPTED_LOCATION=<bucket>` - the GCloud bucket where the file that has been encrypted is located. 
-Placed there by the `encrypt_function`
+Placed there by the `encrypt_function`.
 
 * `ZIP_LOCATION=<bucket>` - the GCloud bucket where the file that needs to be zipped is located. Placed
-there by the `encrypted_function`
+there by the `zip_function`.
 
 * `GOOGLE_APPLICATION_CREDENTIALS=<file>` - google credentials file
 
@@ -43,6 +43,8 @@ If you want pretty coloured output for local testing use `Terminal`
 
 * `DB_SERVER=<server>` - server address
 
+* `DB_SOCKET_DIR` - should be set to `/cloudsql` for production, unset for testing
+
 * `DB_DATABASE=<database>` - name of the database, defaults to 'blaise'
 
 * `DB_USER=<user>` - database user
@@ -52,12 +54,11 @@ If you want pretty coloured output for local testing use `Terminal`
 ## Testing
 
 Under the `cmd` directory there is a main.go file which uses the google `FunctionsFramework` to provide some emulation of 
-events. Note however that these events are triggered by an HTTP request rather than an item arriving on a queue. 
+events. Note that these events are triggered by an HTTP request rather than an item arriving on a queue. 
 Nevertheless, it provides a means of testing. The corrosponding postman file can be found under the `scripts` directory. 
 
 Note that you will need to run the cloud sql proxy application locally to connect to the mysql instance. A script to
-do so, `run_proxy.sh` is in the `scripts` directory and you will need to change the sandbox name to your own.
-
+do so, `run_proxy.sh` or `run_proxy.ps1` is in the `scripts` directory. You will need to change the sandbox name to your own.
 
 Add 3 new storage buckets like so before running:
 

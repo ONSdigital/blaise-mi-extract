@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"context"
-	"github.com/ONSDigital/blaise-mi-extract/pkg/compressor"
+	"github.com/ONSDigital/blaise-mi-extract/pkg/compression"
 	"github.com/ONSDigital/blaise-mi-extract/pkg/storage/google"
 	"github.com/ONSDigital/blaise-mi-extract/pkg/util"
 	"github.com/rs/zerolog/log"
@@ -40,19 +40,19 @@ func ZipCompress(ctx context.Context, name, location string) error {
 		Msgf("received compress request")
 
 	r := google.NewStorage(ctx)
-	zip := compressor.NewService(&r)
+	zip := compression.NewService(&r)
 
 	var zipName string
 	var err error
 
-	compression := util.Zip{
+	c := util.Zip{
 		FileName:     name,
 		FromLocation: location,
 		ToLocation:   compressDestination,
 		DeleteFile:   true,
 	}
 
-	if zipName, err = zip.ZipFile(compression); err != nil {
+	if zipName, err = zip.ZipFile(c); err != nil {
 		log.Err(err).Msg("create compress failed")
 		return err
 	}
