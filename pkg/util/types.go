@@ -52,3 +52,18 @@ type GCSEvent struct {
 	KMSKeyName    string `json:"kmsKeyName"`
 	ResourceState string `json:"resourceState"`
 }
+
+type Zip struct {
+	FileName     string
+	FromLocation string
+	ToLocation   string
+	DeleteFile   bool
+}
+
+type Encrypt struct {
+	KeyFile              string
+	FileName             string
+	Location             string
+	EncryptedDestination string
+	DeleteFile           bool
+}

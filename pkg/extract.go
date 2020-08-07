@@ -87,14 +87,14 @@ func HandleExtractionRequest(ctx context.Context, m PubSubMessage) error {
 	// add additional actions as needed
 	switch m.Action {
 	case "extract_mi":
-		return extractMi(service, m.Instrument)
+		return extractMI(service, m.Instrument)
 	default:
 		log.Warn().Msgf("message rejected, unknown action -> [%s]", m.Action)
 		return nil
 	}
 }
 
-func extractMi(service extractor.Service, instrument string) error {
+func extractMI(service extractor.Service, instrument string) error {
 	log.Info().Msgf("received extract_mi request for %s", instrument)
 
 	var err error
