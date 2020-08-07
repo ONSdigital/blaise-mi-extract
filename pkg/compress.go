@@ -45,12 +45,15 @@ func ZipCompress(ctx context.Context, name, location string) error {
 	var zipName string
 	var err error
 
-	if zipName, err = zip.ZipFile(name, location, compressDestination); err != nil {
-		log.Err(err).Msg("create compress failed")
-		return err
+	compression := util.Zip{
+		FileName:     name,
+		FromLocation: location,
+		ToLocation:   compressDestination,
+		DeleteFile:   true,
 	}
 
-	if err := zip.DeleteFile(name, location); err != nil {
+	if zipName, err = zip.ZipFile(compression); err != nil {
+		log.Err(err).Msg("create compress failed")
 		return err
 	}
 

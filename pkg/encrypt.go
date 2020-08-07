@@ -49,12 +49,16 @@ func HandleEncryptionRequest(ctx context.Context, name, location string) error {
 	r := google.NewStorage(ctx)
 	encrypter := encryption.NewService(&r)
 
-	if err := encrypter.EncryptFile(keyFile, name, location, encryptedDestination); err != nil {
-		log.Warn().Msg("encrypt failed")
-		return err
+	encryptRequest := util.Encrypt{
+		KeyFile:              keyFile,
+		FileName:             name,
+		Location:             location,
+		EncryptedDestination: encryptedDestination,
+		DeleteFile:           true,
 	}
 
-	if err := encrypter.DeleteFile(name, location); err != nil {
+	if err := encrypter.EncryptFile(encryptRequest); err != nil {
+		log.Warn().Msg("encrypt failed")
 		return err
 	}
 
