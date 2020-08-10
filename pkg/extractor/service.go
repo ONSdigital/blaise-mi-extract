@@ -60,11 +60,6 @@ func (s service) ExtractMiInstrument(instrument, destination, destinationFile st
 		return err // error already shown
 	}
 
-	if len(responseData) == 0 {
-		log.Warn().Msgf("no response data found for instrument: %s", instrument)
-		return nil
-	}
-
 	var c io.Writer
 	c, err = s.fileRepository.CreateFile(destination, destinationFile)
 	if err != nil {
