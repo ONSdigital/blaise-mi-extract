@@ -34,7 +34,7 @@ func initialiseEncrypt() {
 	log.Info().Msgf("public key file: %s", keyFile)
 }
 
-// handles event from item arriving in the encrypt  bucket
+// handles event from item arriving in the encrypt bucket
 func HandleEncryptionRequest(ctx context.Context, name, location string) error {
 
 	encryptOnce.Do(func() {
