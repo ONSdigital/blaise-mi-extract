@@ -42,9 +42,6 @@ encryptedBucket --> zipFunction
 zipFunction --> zipBucket
 
 ```
-<br/>
-
-The application architecture has been modelled on the [```Hexagonal Architecture```](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)) pattern. 
 
 # Functions
 
