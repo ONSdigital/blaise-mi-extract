@@ -20,7 +20,7 @@ steps:
     args:
       - "-c"
       - |
-        gsutil cp /mnt/data/blaise-mi-extract.zip gs://ons-blaise-dev-blaise-cloud-functions-source/
+        gsutil cp /mnt/data/blaise-mi-extract.zip gs://ons-blaise-$_ENV-blaise-cloud-functions-source/
     volumes:
       - name: "data"
         path: /mnt/data
@@ -32,7 +32,7 @@ steps:
     - functions
     - deploy
     - ExtractFunction 
-    - --source=gs://ons-blaise-dev-blaise-cloud-functions-source/blaise-mi-extract.zip
+    - --source=gs://ons-blaise-$_ENV-blaise-cloud-functions-source/blaise-mi-extract.zip
     - --entry-point=ExtractFunction
     - --region=europe-west2 
     - --runtime=go113
@@ -46,11 +46,11 @@ steps:
     - functions
     - deploy
     - EncryptFunction 
-    - --source=gs://ons-blaise-dev-blaise-cloud-functions-source/blaise-mi-extract.zip
+    - --source=gs://ons-blaise-$_ENV-blaise-cloud-functions-source/blaise-mi-extract.zip
     - --region=europe-west2 
     - --runtime=go113
     - --trigger-event=google.storage.object.finalize
-    - --trigger-resource=ons-blaise-dev-encrypted
+    - --trigger-resource=ons-blaise-$_ENV-encrypted
 
   - name: "gcr.io/cloud-builders/gcloud"
     id: "Trigger deploy of ZipFunction from new zip"
@@ -59,8 +59,8 @@ steps:
     - functions
     - deploy
     - ZipFunction
-    - --source=gs://ons-blaise-dev-blaise-cloud-functions-source/blaise-mi-extract.zip
+    - --source=gs://ons-blaise-$_ENV-blaise-cloud-functions-source/blaise-mi-extract.zip
     - --region=europe-west2 
     - --runtime=go113
     - --trigger-event=google.storage.object.finalize
-    - --trigger-resource=ons-blaise-dev-zip
+    - --trigger-resource=ons-blaise-$_ENV-zip
