@@ -37,7 +37,7 @@ steps:
     - --region=europe-west2 
     - --runtime=go113
     - --trigger-event=google.pubsub.topic.publish
-    - --trigger-resource=mi-topic
+    - --trigger-resource=mi-extract-topic
 
   - name: "gcr.io/cloud-builders/gcloud"
     id: "Trigger deploy of EncryptFunction from new zip"
@@ -63,4 +63,4 @@ steps:
     - --region=europe-west2 
     - --runtime=go113
     - --trigger-event=google.storage.object.finalize
-    - --trigger-resource=ons-blaise-$_ENV-zip
+    - --trigger-resource=ons-blaise-$_ENV-results
