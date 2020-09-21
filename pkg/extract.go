@@ -84,6 +84,8 @@ func HandleExtractionRequest(ctx context.Context, m PubSubMessage) error {
 	gcloudStorage := google.NewStorage(ctx)
 	service := extractor.NewService(ctx, &gcloudStorage, db)
 
+	log.Warn().Msgf("message  -> [%s]", m)
+
 	// add additional actions as needed
 	switch m.Action {
 	case "extract_mi":
