@@ -12,15 +12,6 @@ import (
 	"sync"
 )
 
-type PayloadMessage struct {
-	Action     string `json:"action"`
-	Instrument string `json:"instrument_name"`
-}
-
-type PubSubMessage struct {
-	Data []byte `json:"data"`
-}
-
 var encryptDestination string
 var extOnce sync.Once
 var db extractor.DBRepository
@@ -33,8 +24,8 @@ func initialiseExtract() {
 
 	var found bool
 
-	if encryptDestination, found = os.LookupEnv(util.EncryptLocation); !found {
-		log.Fatal().Msg("The " + util.EncryptLocation + " variable has not been set")
+	if encryptDestination, found = os.LookupEnv(util.ExtractOutput); !found {
+		log.Fatal().Msg("The " + util.ExtractOutput + " variable has not been set")
 		os.Exit(1)
 	}
 
@@ -79,12 +70,19 @@ func initialiseExtract() {
 
 }
 
+type PayloadMessage struct {
+	Action     string `json:"action"`
+	Instrument string `json:"instrument_name"`
+}
+
+type PubSubMessage struct {
+	Data []byte `json:"data"`
+}
+
 // handle extract request events from publish / subscribe  queue
 func HandleExtractionRequest(ctx context.Context, m PubSubMessage) error {
 
-	extOnce.Do(func() {
-		initialiseExtract()
-	})
+	extOnce.Do(func() { initialiseExtract() })
 
 	gcloudStorage := google.NewStorage(ctx)
 	service := extractor.NewService(ctx, &gcloudStorage, db)
