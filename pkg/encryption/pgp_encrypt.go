@@ -41,7 +41,7 @@ func (s service) EncryptFile(encryptRequest util.Encrypt) error {
 	}
 	defer func() { _ = storageReader.Close() }()
 
-	storageWriter := s.r.GetWriter(encryptRequest.FileName+".gpg", encryptRequest.EncryptedDestination)
+	storageWriter := s.r.GetWriter(encryptRequest.FileName, encryptRequest.EncryptedDestination)
 	defer func() { _ = storageWriter.Close() }()
 
 	// Read public key
