@@ -18,8 +18,8 @@ func initialiseZip() {
 
 	var found bool
 
-	if compressDestination, found = os.LookupEnv(util.ZipLocation); !found {
-		log.Fatal().Msg("The " + util.ZipLocation + " variable has not been set")
+	if compressDestination, found = os.LookupEnv(util.ZipOutput); !found {
+		log.Fatal().Msg("The " + util.ZipOutput + " variable has not been set")
 		os.Exit(1)
 	}
 

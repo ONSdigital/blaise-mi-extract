@@ -7,10 +7,12 @@ import (
 	"github.com/ONSDigital/blaise-mi-extract/pkg/util"
 	"github.com/rs/zerolog/log"
 	"os"
+	"strings"
 	"sync"
 )
 
 var encryptedDestination string
+var gpg = false
 var keyFile string
 var encryptOnce sync.Once
 
@@ -19,8 +21,8 @@ func initialiseEncrypt() {
 
 	var found bool
 
-	if encryptedDestination, found = os.LookupEnv(util.EncryptedLocation); !found {
-		log.Fatal().Msg("The " + util.EncryptedLocation + " variable has not been set")
+	if encryptedDestination, found = os.LookupEnv(util.EncryptOutput); !found {
+		log.Fatal().Msg("The " + util.EncryptOutput + " variable has not been set")
 		os.Exit(1)
 	}
 
@@ -32,6 +34,15 @@ func initialiseEncrypt() {
 	}
 
 	log.Info().Msgf("public key file: %s", keyFile)
+
+	useGpg, found := os.LookupEnv(util.UseGPGExtension)
+	if !found {
+		gpg = false
+	} else {
+		if strings.EqualFold(useGpg, "TRUE") {
+			gpg = true
+		}
+	}
 }
 
 // handles event from item arriving in the encrypt bucket
@@ -55,6 +66,7 @@ func HandleEncryptionRequest(ctx context.Context, name, location string) error {
 		Location:             location,
 		EncryptedDestination: encryptedDestination,
 		DeleteFile:           true,
+		UseGPGExtension:      gpg,
 	}
 
 	if err := encrypt.EncryptFile(encryptRequest); err != nil {
