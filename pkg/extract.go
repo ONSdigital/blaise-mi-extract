@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/ONSDigital/blaise-mi-extract/pkg/extractor"
 	"github.com/ONSDigital/blaise-mi-extract/pkg/storage/google"
 	"github.com/ONSDigital/blaise-mi-extract/pkg/storage/mysql"
@@ -10,11 +11,6 @@ import (
 	"os"
 	"sync"
 )
-
-type PubSubMessage struct {
-	Action     string `json:"action"`
-	Instrument string `json:"instrument_name"`
-}
 
 var encryptDestination string
 var extOnce sync.Once
@@ -28,8 +24,8 @@ func initialiseExtract() {
 
 	var found bool
 
-	if encryptDestination, found = os.LookupEnv(util.EncryptLocation); !found {
-		log.Fatal().Msg("The " + util.EncryptLocation + " variable has not been set")
+	if encryptDestination, found = os.LookupEnv(util.ExtractOutput); !found {
+		log.Fatal().Msg("The " + util.ExtractOutput + " variable has not been set")
 		os.Exit(1)
 	}
 
@@ -74,22 +70,38 @@ func initialiseExtract() {
 
 }
 
+type PayloadMessage struct {
+	Action     string `json:"action"`
+	Instrument string `json:"instrument_name"`
+}
+
+type PubSubMessage struct {
+	Data []byte `json:"data"`
+}
+
 // handle extract request events from publish / subscribe  queue
 func HandleExtractionRequest(ctx context.Context, m PubSubMessage) error {
 
-	extOnce.Do(func() {
-		initialiseExtract()
-	})
+	extOnce.Do(func() { initialiseExtract() })
 
 	gcloudStorage := google.NewStorage(ctx)
 	service := extractor.NewService(ctx, &gcloudStorage, db)
 
+	payload := PayloadMessage{}
+
+	if err := json.Unmarshal(m.Data, &payload); err != nil {
+		log.Warn().Msgf("Cannot decode json message")
+		return nil
+	}
+
+	log.Warn().Msgf("message  -> [%s]", m)
+
 	// add additional actions as needed
-	switch m.Action {
+	switch payload.Action {
 	case "extract_mi":
-		return extractMI(service, m.Instrument)
+		return extractMI(service, payload.Instrument)
 	default:
-		log.Warn().Msgf("message rejected, unknown action -> [%s]", m.Action)
+		log.Warn().Msgf("message rejected, unknown action -> [%s]", payload.Action)
 		return nil
 	}
 }

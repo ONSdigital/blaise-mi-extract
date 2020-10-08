@@ -7,15 +7,17 @@ import (
 // common structures
 
 const (
-	EncryptedLocation = "ENCRYPTED_LOCATION"
-	EncryptLocation   = "ENCRYPT_LOCATION"
-	ZipLocation       = "ZIP_LOCATION"
-	PublicKeyFile     = "PUBLIC_KEY"
-	Server            = "DB_SERVER"
-	User              = "DB_USER"
-	Password          = "DB_PASSWORD"
-	Database          = "DB_DATABASE"
-	DefaultDatabase   = "blase"
+	ExtractOutput   = "EXTRACT_OUTPUT"
+	EncryptOutput   = "ENCRYPT_OUTPUT"
+	ZipOutput       = "ZIP_OUTPUT"
+	UseGPGExtension = "GPG_EXTENSION"
+
+	PublicKeyFile   = "PUBLIC_KEY"
+	Server          = "DB_SERVER"
+	User            = "DB_USER"
+	Password        = "DB_PASSWORD"
+	Database        = "DB_DATABASE"
+	DefaultDatabase = "blase"
 )
 
 // google storage events data
@@ -66,4 +68,5 @@ type Encrypt struct {
 	Location             string
 	EncryptedDestination string
 	DeleteFile           bool
+	UseGPGExtension      bool
 }

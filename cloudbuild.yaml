@@ -50,7 +50,7 @@ steps:
     - --region=europe-west2 
     - --runtime=go113
     - --trigger-event=google.storage.object.finalize
-    - --trigger-resource=ons-blaise-$_ENV-encrypted
+    - --trigger-resource=ons-blaise-$_ENV-encrypt
 
   - name: "gcr.io/cloud-builders/gcloud"
     id: "Trigger deploy of ZipFunction from new zip"
@@ -63,4 +63,4 @@ steps:
     - --region=europe-west2 
     - --runtime=go113
     - --trigger-event=google.storage.object.finalize
-    - --trigger-resource=ons-blaise-$_ENV-results
+    - --trigger-resource=ons-blaise-$_ENV-zip
